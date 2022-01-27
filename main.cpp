@@ -33,11 +33,7 @@ int main(){
     // 2. Povežite stringove pomoću podvlake Koristite ranges::accumulate(). 
     const std::vector<std::string> v{"we", "will", "see"};
     // Vaš kod.
-     auto dash_fold = [](std::string a, std::string b) {
-                         return a + '-' + b;
-                     };
-
-    std::string s = accumulate(std::next(v.begin()), v.end(),v[0], dash_fold);
+    auto s = accumulate(v | views::tail, front(v),[](auto const& a, auto const& b){return std::string{a + "_" + b};});
     std::cout<<"2: "<<s<<std::endl;
     }
 
@@ -46,10 +42,11 @@ int main(){
     // 3. Konvertiraj vektor cijelih brojeva (znamenaka) u broj (pomoću accumulate)
     auto const v = std::vector{1,7,5,6,9,3}; // retultat =  17569358
     // Vaš kod.
-    auto dash_fold = [](std::string a, int b) {
+    auto help_function = [](std::string a, int b) {
                          return std::move(a) + std::to_string(b);
                      };
-    std::string s = accumulate(std::next(v.begin()), v.end(),std::to_string(v[0]), dash_fold);
+    std::string s = accumulate(std::next(v.begin()), v.end(),std::to_string(v[0]), help_function);
+     
     std::cout<<"3: "<<s<<std::endl;
     }
     
@@ -58,20 +55,29 @@ int main(){
     // 4. Aproksimirajte broj  π koristeći Gregory - Leibnizovu formulu 
     // π ≈ 4 * ( 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...). Ispišite rezultat s 30 članova.
     // Vaš kod
-    auto seq = views::iota(1,60);
+
     int n=2;
-    auto seq2=seq | views::stride(2);
+    /*auto seq= views::iota(1,60) | views::stride(2);
     auto help=views::iota(0,2) | views::cycle;
-    auto zipp = views::zip(seq2,help); 
+    auto zipp = views::zip(seq,help); 
     auto r_repl = zipp | views::transform([n](auto const& p){return 
                                              (p.second == n-1) ?  -p.first : p.first;});
 
-    std::cout<<"4. ";
-    for(auto x:r_repl)
-        std::cout<<x<<" ";
+    auto v2 = r_repl | views::transform([](auto x){ return (double)1/x; });*/
 
+    ///s manje varijabli
+    auto v2 =  views::zip(views::iota(1,60) | views::stride(2),views::iota(0,2) | views::cycle) | 
+               views::transform([n](auto const& p){return (p.second == n-1) ?  -p.first : p.first;}) | 
+               views::transform([](auto x){ return (double)1/x; });
+
+
+    double product = accumulate(v2.begin(), v2.end(), 0.0,std::plus<double>());
+    
+    std::cout<<"4. ";
+    std::cout<<4*product<<std::endl;
     }
-    std::cout<<std::endl;
+
+
     {
     // 5. Selektirati domenu u web adresi i konverirati ju u string. Ispisati. 
     auto const str = std::string{"https://en.test.org"}; // -> org
