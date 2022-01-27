@@ -86,8 +86,7 @@ int main(){
                          return a+b;};
 
     auto s=views::reverse(take_while_view ( views::reverse(str), [](auto x){ return x!='.'; }));
-   
-    std::string x= accumulate(s.begin(), s.end(),std::to_string(s[0]), dash_fold);
+    auto x=accumulate(s.begin(),s.end(),std::string{},[](auto const& a,auto const& b){return std::string{a+b};});
     std::cout<<"5. "<<x<<std::endl;
     } 
 
@@ -107,8 +106,8 @@ int main(){
    {
     // 7. Izbaciti svaki treći element niza. Na primjer 0,1,2,3,4,5,6,7,8,... --> 0,1,4,5,6,7,9,... .
     // Vaš kod. 
-    auto seq = views::iota(0,30);
     auto n=3;
+    /*auto seq = views::iota(0,30);
     auto help=views::iota(0,n) | views::cycle;
     auto r_int_str = seq | views::transform([](int x) { return std::to_string(x);});//prebaci u string treba kasnije
 
@@ -116,11 +115,18 @@ int main(){
     auto r_repl = zipp | views::transform([n](auto const& p){return 
                                              (p.second == n-1) ?  "_" : p.first;});
 
+    auto first = r_repl | views::remove_if([](auto x){ return x=="_"; });*/
     
-    auto first = r_repl | views::remove_if([](auto x){ return x=="_"; });
+    //s manje varijabli
+    //iota ogranicen na niz od 30 brojeva,funkcionira i za iota(0)
+    auto s = views::zip( views::iota(0,30) | views::transform([](int x) { return std::to_string(x);}),views::iota(0,n) | views::cycle) | 
+             views::transform([n](auto const& p){return (p.second == n-1) ?  "_" : p.first;}) | 
+             views::remove_if([](auto x){ return x=="_"; });
+
     std::cout<<"7. ";
-    for(auto x:first)
+    for(auto x:s)
         std::cout<<x<<" ";
+
     return 0;
    }
 }
