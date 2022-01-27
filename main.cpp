@@ -20,14 +20,13 @@ int main(){
     Planet const v[] = {{"Venus",8.87}, {"Mars",3.711}, {"Jupiter", 24.92},{"Neptun", 11.15},
                         {"Saturn", 10.44}, {"Uran",8.69}};
     // Vaš kod.
-    auto vv= v | ranges::views::filter([](auto x){ return x.gravity==11.15; });    
     std::cout<<"1. ";
-    for(auto x : vv)
-        {
-            std::cout<<x.name<<std::endl;
-        }
-    
-   }
+   
+    if (auto result = ranges::find_if(v, [](Planet x) { return x.gravity == 11.15; })) 
+                    std::cout <<result->name;
+   
+    std::cout<<std::endl;
+    }
 
     {
     // 2. Povežite stringove pomoću podvlake Koristite ranges::accumulate(). 
